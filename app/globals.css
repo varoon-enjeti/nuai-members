@@ -2,3 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+tr:nth-child(even) {
+    background-color: #B6ACD1;
+}
+
+tr:nth-child(odd) {
+    background-color: #E4E0EE;
+}
+
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td,
+th {
+    border: 1px solid #4E2A84;
+    text-align: left;
+    padding: 8px;
+}

@@ -1,6 +1,8 @@
+'use client'
 import Image from 'next/image'
 import { initializeApp, deleteApp } from "firebase/app";
 import { getFirestore, collection, doc, setDoc, getDocs } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCRBNdSciIhOheTbcPr8WJHZoNyjM2y6Mo",
@@ -16,27 +18,39 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 export default function Home() {
-  const fetchData = async () => {
-    const querySnapshot = await getDocs(collection(db, "users"));
-    let count = 0
-    querySnapshot.forEach((doc) => {
-      // doc.data() is never undefined for query doc snapshots
-      console.log(doc.id, " => ", doc.data());
-      count++
-      return (
-        <div>{doc.id}</div>
-      )
-    });
-    console.log(count)
-    // const docRef = doc(db, "users", "AidanMott2026@u.northwestern.edu");
-    // const docSnap = await getDoc(docRef);
+  const [userData, setUserData] = useState<JSX.Element[]>([]);
+  const [count, setCount] = useState(0);
 
-    // if (docSnap.exists()) {
-    //   console.log("Document data:", docSnap.data());
-    // } else {
-    //   // docSnap.data() will be undefined in this case
-    //   console.log("No such document!");
-    // }
-  }
-  fetchData();
+  useEffect(() => {
+    async function fetchData() {
+      const querySnapshot = await getDocs(collection(db, "users"));
+      const userDataArray: JSX.Element[] = [];
+      let totalCount = 0
+      querySnapshot.forEach((doc) => {
+        totalCount++
+        userDataArray.push(
+          <tr>
+            <td>{doc.data().firstName}</td>
+            <td>{doc.data().lastName}</td>
+            <td>{doc.id}</td>
+          </tr>
+        );
+      });
+      setCount(totalCount)
+      setUserData(userDataArray);
+    }
+    fetchData();
+  }, [db]);
+
+  return <div className="w-full h-full flex gap-56">
+    <table className='w-1/3 h-full m-3'>
+        <tr>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Email</th>
+        </tr>
+      {userData}
+    </table>
+    <p className='m-3 font-semibold text-2xl text-purple-900'>Number of Sign-Ups: {count}</p>
+  </div>;
 }
